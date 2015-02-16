@@ -13,6 +13,8 @@ ini_set('display_startup_errors',1);
 error_reporting(-1);
 //*/
 
+header('Content-Type: application/javascript');
+
 $apiKey = '5f0b624e922d6c1082480617cc2a3767';  // Reset key if compromised!!!
 
 $request   = isset($_GET['request'])   ? $_GET['request']   : false;

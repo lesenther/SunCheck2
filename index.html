@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>SunCheck - Quick weather analytics</title>
-    <meta name="description" content="Simple weather analytics">
+    <meta name="description" content="Quick weather analytics">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="css/normalize.css">
@@ -12,39 +12,40 @@
     <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
   </head>
 
-  <body>
-    <script type="text/x-handlebars"> <!-- Application template -->
+  <body onload="document.getElementById('locationQuery').select();">
+
+    <script type="text/x-handlebars" data-template-name="application">
       <div id="container">
         <table><tr><td>
+
           <header onclick="alertUser('Developed by <em>Logan Esenther</em> (le@berkeley.edu)',3000);">
             <img src="/img/logo.png">
             <h1>SunCheck</h1>
             <p>Quick weather analytics</p>
           </header>
+
           <section id="content">
-            {{#link-to "now"}}Now{{/link-to}} |
-            {{#link-to "past"}}Past{{/link-to}}
-            <br>
-            {{input value=locationQuery id="locationQuery" placeholder="Enter location"}}
-            <!-- if(event.keyCode==13){alertUser('hehe');findCoordsForLocation();} -->
-            <input type="submit" onclick="findCoordsForLocation();" value="Check">
+
+            {{location-query action="searchCoords" locationQuery=locationQuery}}
 
             <div id="results">
               {{outlet}}
             </div>
+
           </section>
         </td></tr></table>
         <footer>
-          Powered by <a href="//forecast.io" target="_blank">Forecast.io</a>
+          Powered by <a href="//emberjs.com" target="_blank">Ember.js</a> and <a href="//forecast.io" target="_blank">Forecast.io</a>
         </footer>
       </div>
 
       <div id="mask">
         <table><tr><td>
-          <div id="notice"></div>
+          <div id="notice">{{loadingMessage}}</div>
         </td></tr></table>
         <span class="close" onclick="hideAlert();">&times;</span>
       </div>
+
     </script>
 
 
@@ -55,16 +56,35 @@
         <li class="temp">{{temperature}}</li>
         <li>{{humidity}}</li>
       </ul>
+      <p>{{historical-lookup action="getHistorialWeather"}}</p>
     </script>
 
     <script type="text/x-handlebars" data-template-name="past">
-      <h2>Past weather for {{locationQuery}}</h2>
+      <p>Weather between <em>{{date_start}}</em> and <em>{{date_end}}</em> in <em>{{locationQuery}}</em>:</p>
       <ul>
         <li>Sunny days: <strong>{{percent_sunny}}</strong><img {{bind-attr src=sun_map}}></li>
         <li>Rainy days: <strong>{{percent_rainy}}</strong><img {{bind-attr src=rain_map}}></li>
         <li>Temperature: <img {{bind-attr src=temp_map}}><span>(Average, &deg;F)</span></li>
         <li></li>
       </ul>
+      <p>{{historical-lookup action="getHistorialWeather"}}</p>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="components/location-query">
+      {{input type="search" value=locationQuery id="locationQuery" placeholder="Enter location"}}
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="components/historical-lookup">
+      <button id="getHistoricalWeather" {{action "getHistoricalWeather"}}></button>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="global-loading">
+      <div id="mask">
+        <table><tr><td>
+          <div id="notice">{{loadingMessage}}</div>
+        </td></tr></table>
+        <span class="close" onclick="hideAlert();">&times;</span>
+      </div>
     </script>
 
     <script src="js/libs/jquery-1.10.2.js"></script>
